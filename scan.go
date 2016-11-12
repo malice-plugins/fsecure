@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -55,7 +56,7 @@ type ScanEngines struct {
 }
 
 // ParseFSecureOutput convert fsecure output into ResultsData struct
-func ParseFSecureOutput(fsecureout string) (ResultsData, error) {
+func ParseFSecureOutput(fsecureout string, err error) (ResultsData, error) {
 
 	// root@70bc84b1553c:/malware# fsav --virus-action1=none eicar.com.txt
 	// EVALUATION VERSION - FULLY FUNCTIONAL - FREE TO USE FOR 30 DAYS.
@@ -74,6 +75,10 @@ func ParseFSecureOutput(fsecureout string) (ResultsData, error) {
 	// 1 file infected
 
 	log.Debugln(fsecureout)
+
+	if err != nil {
+		return ResultsData{}, err
+	}
 
 	version, database := getFSecureVersion()
 
@@ -134,7 +139,8 @@ func getFSecureVersion() (version string, database string) {
 	// For full license information on Hydra engine please see licenses-fselinux.txt in the databases folder
 
 	exec.Command("/opt/f-secure/fsav/bin/fsavd").Output()
-	versionOut := utils.RunCommand("/opt/f-secure/fsav/bin/fsav", "--version")
+	versionOut, err := utils.RunCommand(nil, "/opt/f-secure/fsav/bin/fsav", "--version")
+	utils.Assert(err)
 
 	return parseFSecureVersion(versionOut)
 }
@@ -183,13 +189,14 @@ func printStatus(resp gorequest.Response, body string, errs []error) {
 	fmt.Println(resp.Status)
 }
 
-func updateAV() error {
+func updateAV(ctx context.Context) error {
 	fmt.Println("Updating FSecure...")
 	// FSecure needs to have the daemon started first
 	exec.Command("/etc/init.d/fsaua", "start").Output()
 	exec.Command("/etc/init.d/fsupdate", "start").Output()
 
 	fmt.Println(utils.RunCommand(
+		ctx,
 		"/opt/f-secure/fsav/bin/dbupdate",
 		"/opt/f-secure/fsdbupdate9.run",
 	))
@@ -214,35 +221,19 @@ func printMarkDownTable(fsecure FSecure) {
 	table.Print()
 }
 
-var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
-
-{{.Usage}}
-
-Version: {{.Version}}{{if or .Author .Email}}
-
-Author:{{if .Author}}
-  {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
-  {{.Email}}{{end}}{{end}}
-{{if .Flags}}
-Options:
-  {{range .Flags}}{{.}}
-  {{end}}{{end}}
-Commands:
-  {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
-  {{end}}
-Run '{{.Name}} COMMAND --help' for more information on a command.
-`
-
 func main() {
-	cli.AppHelpTemplate = appHelpTemplate
+
+	var elastic string
+
+	cli.AppHelpTemplate = utils.AppHelpTemplate
 	app := cli.NewApp()
+
 	app.Name = "f-secure"
 	app.Author = "blacktop"
 	app.Email = "https://github.com/blacktop"
 	app.Version = Version + ", BuildTime: " + BuildTime
 	app.Compiled, _ = time.Parse("20060102", BuildTime)
 	app.Usage = "Malice F-Secure AntiVirus Plugin"
-	var elasitcsearch string
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "verbose, V",
@@ -253,7 +244,7 @@ func main() {
 			Value:       "",
 			Usage:       "elasitcsearch address for Malice to store results",
 			EnvVar:      "MALICE_ELASTICSEARCH",
-			Destination: &elasitcsearch,
+			Destination: &elastic,
 		},
 		cli.BoolFlag{
 			Name:  "table, t",
@@ -269,6 +260,12 @@ func main() {
 			Usage:  "proxy settings for Malice webhook endpoint",
 			EnvVar: "MALICE_PROXY",
 		},
+		cli.IntFlag{
+			Name:   "timeout",
+			Value:  10,
+			Usage:  "malice plugin timeout (in seconds)",
+			EnvVar: "MALICE_TIMEOUT",
+		},
 	}
 	app.Commands = []cli.Command{
 		{
@@ -276,11 +273,18 @@ func main() {
 			Aliases: []string{"u"},
 			Usage:   "Update virus definitions",
 			Action: func(c *cli.Context) error {
-				return updateAV()
+				ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
+				defer cancel()
+
+				return updateAV(ctx)
 			},
 		},
 	}
 	app.Action = func(c *cli.Context) error {
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
+		defer cancel()
+
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -292,10 +296,15 @@ func main() {
 
 		var results ResultsData
 
-		results, err := ParseFSecureOutput(utils.RunCommand("/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
+		results, err := ParseFSecureOutput(utils.RunCommand(
+			ctx,
+			"/opt/f-secure/fsav/bin/fsav",
+			"--virus-action1=none",
+			path,
+		))
 		if err != nil {
 			// If fails try a second time
-			results, err = ParseFSecureOutput(utils.RunCommand("/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
+			results, err = ParseFSecureOutput(utils.RunCommand(ctx, "/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
 			utils.Assert(err)
 		}
 
@@ -304,7 +313,7 @@ func main() {
 		}
 
 		// upsert into Database
-		elasticsearch.InitElasticSearch()
+		elasticsearch.InitElasticSearch(elastic)
 		elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
 			ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
 			Name:     name,
@@ -323,9 +332,11 @@ func main() {
 					request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
 				}
 				request.Post(os.Getenv("MALICE_ENDPOINT")).
-					Set("Task", path).
-					Send(fsecureJSON).
+					Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
+					Send(string(fsecureJSON)).
 					End(printStatus)
+
+				return nil
 			}
 			fmt.Println(string(fsecureJSON))
 		}
