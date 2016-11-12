@@ -1,7 +1,7 @@
 malice-fsecure
 ===============
 
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/)
+[![Circle CI](https://circleci.com/gh/maliceio/malice-fsecure.png?style=shield)](https://circleci.com/gh/maliceio/malice-fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/) [![Docker Image](https://img.shields.io/badge/docker image-212.5 MB-blue.svg)](https://hub.docker.com/r/malice/f-secure/)
 
 This repository contains a **Dockerfile** of [f-secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) for [Docker](https://www.docker.io/)'s [trusted build](https://hub.docker.com/r/malice/f-secure/) published to the public [DockerHub](https://index.docker.io/).
 
@@ -39,7 +39,8 @@ Options:
   --table, -t           output as Markdown table
   --post, -p            POST results to Malice webhook [$MALICE_ENDPOINT]
   --proxy, -x           proxy settings for Malice webhook endpoint [$MALICE_PROXY]
-  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH] 
+  --timeout value       malice plugin timeout (in seconds) (default: 10) [$MALICE_TIMEOUT]  
+  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]
   --help, -h            show help
   --version, -v         print the version
 
@@ -80,17 +81,29 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ---
 
+Documentation
+-------------
+
 ### To write results to [ElasticSearch](https://www.elastic.co/products/elasticsearch)
 
 ```bash
 $ docker volume create --name malice
-$ docker run -d -p 9200:9200 -v malice:/data --name elastic elasticsearch
+$ docker run -d --name elastic \
+                -p 9200:9200 \
+                -v malice:/usr/share/elasticsearch/data \
+                 blacktop/elasticsearch
 $ docker run --rm -v /path/to/malware:/malware:ro --link elastic malice/f-secure -t FILE
 ```
 
-### Documentation
+### POST results to a webhook
 
-To update the AV run the following:
+```bash
+$ docker run -v `pwd`:/malware:ro \
+             -e MALICE_ENDPOINT="https://malice.io:31337/scan/file" \
+             malice/f-secure --post evil.malware
+```
+
+### To update the AV run the following:
 
 ```bash
 $ docker run --name=f-secure malice/f-secure update
@@ -106,7 +119,17 @@ $ docker run --rm malice/f-secure:updated EICAR
 
 ### Issues
 
-Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-av/issues/new) and I'll get right on it.
+Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fsecure/issues/new).
+
+### CHANGELOG
+
+See [`CHANGELOG.md`](https://github.com/maliceio/malice-fsecure/blob/master/sophos/CHANGELOG.md)
+
+### Contributing
+
+[See all contributors on GitHub](https://github.com/maliceio/malice-fsecure/graphs/contributors).
+
+Please update the [CHANGELOG.md](https://github.com/maliceio/malice-fsecure/blob/master/sophos/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
 
 ### License
 
