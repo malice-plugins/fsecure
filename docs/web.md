@@ -26,7 +26,7 @@ Date: Sat, 21 Jan 2017 05:39:29 GMT
         "engine": "13.0.3114",
         "infected": true,
         "result": "Found Win32/DH{CGE?}",
-        "updated": "20170121"
+        "updated": "20170122"
     }
 }
 ```

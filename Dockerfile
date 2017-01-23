@@ -1,9 +1,9 @@
 FROM debian:jessie
 
-MAINTAINER blacktop, https://github.com/blacktop
+LABEL maintainer "https://github.com/blacktop"
 
+ENV FSECURE_VERSION 11.10.68
 ENV GO_VERSION 1.7.4
-ENV FSECURE_VERSION 11.00.79-rtm
 
 # Install Requirements
 RUN buildDeps='ca-certificates wget rpm' \
@@ -11,9 +11,9 @@ RUN buildDeps='ca-certificates wget rpm' \
   && apt-get install -yq $buildDeps lib32stdc++6 psmisc \
   && echo "Install F-Secure..." \
   && cd /tmp \
-  && wget https://download.f-secure.com/corpro/ls/trial/fsls-${FSECURE_VERSION}.tar.gz \
-  && tar zxvf fsls-${FSECURE_VERSION}.tar.gz \
-  && cd fsls-${FSECURE_VERSION} \
+  && wget https://download.f-secure.com/corpro/ls/trial/fsls-${FSECURE_VERSION}-rtm.tar.gz \
+  && tar zxvf fsls-${FSECURE_VERSION}-rtm.tar.gz \
+  && cd fsls-${FSECURE_VERSION}-rtm \
   && chmod a+x fsls-${FSECURE_VERSION} \
   && ./fsls-${FSECURE_VERSION} --auto standalone lang=en --command-line-only \
   && fsav --version \
@@ -64,3 +64,5 @@ WORKDIR /malware
 ENTRYPOINT ["/bin/avscan"]
 
 CMD ["--help"]
+
+# https://download.f-secure.com/corpro/ls/trial/fsls-11.10.68-rtm.tar.gz

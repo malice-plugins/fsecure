@@ -29,7 +29,7 @@ Usage: f-secure [OPTIONS] COMMAND [arg...]
 
 Malice F-Secure AntiVirus Plugin
 
-Version: v0.1.0, BuildTime: 20160919
+Version: v0.1.0, BuildTime: 20170122
 
 Author:
   blacktop - <https://github.com/blacktop>
@@ -65,7 +65,7 @@ This will output to stdout and POST to malice results API webhook endpoint.
     },
     "engine": "11.00 build 79",
     "database": "2016-09-19_01",
-    "updated": "20160919"
+    "updated": "20170122"
   }
 }
 ```
@@ -77,7 +77,7 @@ This will output to stdout and POST to malice results API webhook endpoint.
 #### F-Secure
 | Infected | Result                        | Engine         | Updated  |
 | -------- | ----------------------------- | -------------- | -------- |
-| true     | EICAR-Test-File (not a virus) | 11.00 build 79 | 20160919 |
+| true     | EICAR-Test-File (not a virus) | 11.00 build 79 | 20170122 |
 
 ---
 
