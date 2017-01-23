@@ -1,9 +1,9 @@
 malice-fsecure
 ===============
 
-[![Circle CI](https://circleci.com/gh/maliceio/malice-fsecure.png?style=shield)](https://circleci.com/gh/maliceio/malice-fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/f-secure.svg)](https://hub.docker.com/r/malice/f-secure/) [![Docker Image](https://img.shields.io/badge/docker image-2.45 GB-blue.svg)](https://hub.docker.com/r/malice/f-secure/)
+[![Circle CI](https://circleci.com/gh/maliceio/malice-fsecure.png?style=shield)](https://circleci.com/gh/maliceio/malice-fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker image-2.45 GB-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
 
-This repository contains a **Dockerfile** of [f-secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) for [Docker](https://www.docker.io/)'s [trusted build](https://hub.docker.com/r/malice/f-secure/) published to the public [DockerHub](https://index.docker.io/).
+This repository contains a **Dockerfile** of [f-secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) for [Docker](https://www.docker.io/)'s [trusted build](https://hub.docker.com/r/malice/fsecure/) published to the public [DockerHub](https://index.docker.io/).
 
 ### Dependencies
 
@@ -12,20 +12,20 @@ This repository contains a **Dockerfile** of [f-secure](https://www.f-secure.com
 ### Installation
 
 1.	Install [Docker](https://www.docker.io/).
-2.	Download [trusted build](https://hub.docker.com/r/malice/f-secure/) from public [DockerHub](https://hub.docker.com): `docker pull malice/f-secure`
+2.	Download [trusted build](https://hub.docker.com/r/malice/fsecure/) from public [DockerHub](https://hub.docker.com): `docker pull malice/fsecure`
 
 ### Usage
 
 ```
-docker run --rm malice/f-secure EICAR
+docker run --rm malice/fsecure EICAR
 ```
 
 #### Or link your own malware folder:
 
 ```bash
-$ docker run --rm -v /path/to/malware:/malware:ro malice/f-secure FILE
+$ docker run --rm -v /path/to/malware:/malware:ro malice/fsecure FILE
 
-Usage: f-secure [OPTIONS] COMMAND [arg...]
+Usage: fsecure [OPTIONS] COMMAND [arg...]
 
 Malice F-Secure AntiVirus Plugin
 
@@ -48,7 +48,7 @@ Commands:
   web       Create a F-Secure scan web service  
   help		Shows a list of commands or help for one command
 
-Run 'f-secure COMMAND --help' for more information on a command.
+Run 'fsecure COMMAND --help' for more information on a command.
 ```
 
 This will output to stdout and POST to malice results API webhook endpoint.
