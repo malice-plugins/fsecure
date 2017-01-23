@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/crackcomm/go-clitable"
 	"github.com/fatih/structs"
+	"github.com/gorilla/mux"
 	"github.com/maliceio/go-plugin-utils/database/elasticsearch"
 	"github.com/maliceio/go-plugin-utils/utils"
 	"github.com/parnurzeal/gorequest"
@@ -53,6 +55,30 @@ type ResultsData struct {
 type ScanEngines struct {
 	FSE      string `json:"fse" structs:"fse"`
 	Aquarius string `json:"aquarius" structs:"aquarius"`
+}
+
+// AvScan performs antivirus scan
+func AvScan(path string, timeout int) FSecure {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	var results ResultsData
+
+	results, err := ParseFSecureOutput(utils.RunCommand(
+		ctx,
+		"/opt/f-secure/fsav/bin/fsav",
+		"--virus-action1=none",
+		path,
+	))
+	if err != nil {
+		// If fails try a second time
+		results, err = ParseFSecureOutput(utils.RunCommand(ctx, "/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
+		utils.Assert(err)
+	}
+
+	return FSecure{
+		Results: results,
+	}
 }
 
 // ParseFSecureOutput convert fsecure output into ResultsData struct
@@ -185,10 +211,6 @@ func getUpdatedDate() string {
 	return string(updated)
 }
 
-func printStatus(resp gorequest.Response, body string, errs []error) {
-	fmt.Println(resp.Status)
-}
-
 func updateAV(ctx context.Context) error {
 	fmt.Println("Updating FSecure...")
 	// FSecure needs to have the daemon started first
@@ -221,6 +243,56 @@ func printMarkDownTable(fsecure FSecure) {
 	table.Print()
 }
 
+func printStatus(resp gorequest.Response, body string, errs []error) {
+	fmt.Println(body)
+}
+
+func webService() {
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/scan", webAvScan).Methods("POST")
+	log.Info("web service listening on port :3993")
+	log.Fatal(http.ListenAndServe(":3993", router))
+}
+
+func webAvScan(w http.ResponseWriter, r *http.Request) {
+
+	r.ParseMultipartForm(32 << 20)
+	file, header, err := r.FormFile("malware")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Please supply a valid file to scan.")
+		log.Error(err)
+	}
+	defer file.Close()
+
+	log.Debug("Uploaded fileName: ", header.Filename)
+
+	tmpfile, err := ioutil.TempFile("/malware", "web_")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	data, err := ioutil.ReadAll(file)
+
+	if _, err = tmpfile.Write(data); err != nil {
+		log.Fatal(err)
+	}
+	if err = tmpfile.Close(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Do AV scan
+	fsecure := AvScan(tmpfile.Name(), 60)
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(fsecure); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 
 	var elastic string
@@ -251,7 +323,7 @@ func main() {
 			Usage: "output as Markdown table",
 		},
 		cli.BoolFlag{
-			Name:   "post, p",
+			Name:   "callback, c",
 			Usage:  "POST results to Malice webhook",
 			EnvVar: "MALICE_ENDPOINT",
 		},
@@ -279,66 +351,65 @@ func main() {
 				return updateAV(ctx)
 			},
 		},
+		{
+			Name:  "web",
+			Usage: "Create a F-Secure scan web service",
+			Action: func(c *cli.Context) error {
+				// ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
+				// defer cancel()
+
+				webService()
+
+				return nil
+			},
+		},
 	}
 	app.Action = func(c *cli.Context) error {
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
-		defer cancel()
-
-		path := c.Args().First()
-
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			utils.Assert(err)
-		}
 		if c.Bool("verbose") {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		var results ResultsData
+		if c.Args().Present() {
 
-		results, err := ParseFSecureOutput(utils.RunCommand(
-			ctx,
-			"/opt/f-secure/fsav/bin/fsav",
-			"--virus-action1=none",
-			path,
-		))
-		if err != nil {
-			// If fails try a second time
-			results, err = ParseFSecureOutput(utils.RunCommand(ctx, "/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
-			utils.Assert(err)
-		}
+			path := c.Args().First()
 
-		fsecure := FSecure{
-			Results: results,
-		}
-
-		// upsert into Database
-		elasticsearch.InitElasticSearch(elastic)
-		elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
-			ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
-			Name:     name,
-			Category: category,
-			Data:     structs.Map(fsecure.Results),
-		})
-
-		if c.Bool("table") {
-			printMarkDownTable(fsecure)
-		} else {
-			fsecureJSON, err := json.Marshal(fsecure)
-			utils.Assert(err)
-			if c.Bool("post") {
-				request := gorequest.New()
-				if c.Bool("proxy") {
-					request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
-				}
-				request.Post(os.Getenv("MALICE_ENDPOINT")).
-					Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
-					Send(string(fsecureJSON)).
-					End(printStatus)
-
-				return nil
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				utils.Assert(err)
 			}
-			fmt.Println(string(fsecureJSON))
+
+			fsecure := AvScan(path, c.Int("timeout"))
+
+			// upsert into Database
+			elasticsearch.InitElasticSearch(elastic)
+			elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
+				ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
+				Name:     name,
+				Category: category,
+				Data:     structs.Map(fsecure.Results),
+			})
+
+			if c.Bool("table") {
+				printMarkDownTable(fsecure)
+			} else {
+				fsecureJSON, err := json.Marshal(fsecure)
+				utils.Assert(err)
+				if c.Bool("post") {
+					request := gorequest.New()
+					if c.Bool("proxy") {
+						request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
+					}
+					request.Post(os.Getenv("MALICE_ENDPOINT")).
+						Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
+						Send(string(fsecureJSON)).
+						End(printStatus)
+
+					return nil
+				}
+				fmt.Println(string(fsecureJSON))
+			}
+		} else {
+			log.Fatal(fmt.Errorf("Please supply a file to scan with malice/fsecure"))
 		}
 		return nil
 	}

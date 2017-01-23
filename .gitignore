@@ -26,3 +26,6 @@ _testmain.go
 fsls-11.00.79-rtm.tar.gz
 
 fsdbupdate9.run
+*.bu
+
+results.json
