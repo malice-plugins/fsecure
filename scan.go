@@ -33,6 +33,8 @@ const (
 	category = "av"
 )
 
+var path string
+
 type pluginResults struct {
 	ID   string      `json:"id" structs:"id,omitempty"`
 	Data ResultsData `json:"f-secure" structs:"f-secure"`
@@ -58,8 +60,18 @@ type ScanEngines struct {
 	Aquarius string `json:"aquarius" structs:"aquarius"`
 }
 
+func assert(err error) {
+	if err != nil {
+		log.WithFields(log.Fields{
+			"plugin":   name,
+			"category": category,
+			"path":     path,
+		}).Fatal(err)
+	}
+}
+
 // AvScan performs antivirus scan
-func AvScan(path string, timeout int) FSecure {
+func AvScan(timeout int) FSecure {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
@@ -74,7 +86,7 @@ func AvScan(path string, timeout int) FSecure {
 	if err != nil {
 		// If fails try a second time
 		results, err = ParseFSecureOutput(utils.RunCommand(ctx, "/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
-		utils.Assert(err)
+		assert(err)
 	}
 
 	return FSecure{
@@ -167,7 +179,7 @@ func getFSecureVersion() (version string, database string) {
 
 	exec.Command("/opt/f-secure/fsav/bin/fsavd").Output()
 	versionOut, err := utils.RunCommand(nil, "/opt/f-secure/fsav/bin/fsav", "--version")
-	utils.Assert(err)
+	assert(err)
 
 	return parseFSecureVersion(versionOut)
 }
@@ -208,7 +220,7 @@ func getUpdatedDate() string {
 		return BuildTime
 	}
 	updated, err := ioutil.ReadFile("/opt/malice/UPDATED")
-	utils.Assert(err)
+	assert(err)
 	return string(updated)
 }
 
@@ -284,7 +296,8 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do AV scan
-	fsecure := AvScan(tmpfile.Name(), 60)
+	path = tmpfile.Name()
+	fsecure := AvScan(60)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -335,7 +348,7 @@ func main() {
 		},
 		cli.IntFlag{
 			Name:   "timeout",
-			Value:  10,
+			Value:  60,
 			Usage:  "malice plugin timeout (in seconds)",
 			EnvVar: "MALICE_TIMEOUT",
 		},
@@ -373,13 +386,13 @@ func main() {
 
 		if c.Args().Present() {
 			path, err := filepath.Abs(c.Args().First())
-			utils.Assert(err)
+			assert(err)
 
 			if _, err := os.Stat(path); os.IsNotExist(err) {
-				utils.Assert(err)
+				assert(err)
 			}
 
-			fsecure := AvScan(path, c.Int("timeout"))
+			fsecure := AvScan(c.Int("timeout"))
 
 			// upsert into Database
 			elasticsearch.InitElasticSearch(elastic)
@@ -394,7 +407,7 @@ func main() {
 				printMarkDownTable(fsecure)
 			} else {
 				fsecureJSON, err := json.Marshal(fsecure)
-				utils.Assert(err)
+				assert(err)
 				if c.Bool("post") {
 					request := gorequest.New()
 					if c.Bool("proxy") {
@@ -416,5 +429,5 @@ func main() {
 	}
 
 	err := app.Run(os.Args)
-	utils.Assert(err)
+	assert(err)
 }
