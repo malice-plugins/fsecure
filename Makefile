@@ -2,7 +2,6 @@ REPO=malice-plugins/fsecure
 ORG=malice
 NAME=fsecure
 VERSION=$(shell cat VERSION)
-ZONE_KEY?=$(shell cat fsecure.key)
 
 all: build size test avtest gotest
 
@@ -33,13 +32,11 @@ gotest:
 
 avtest:
 	@echo "===> ${NAME} EICAR Test"
-	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/etc/init.d/zavd start --no-daemon > /dev/null 2>&1 && zavcli /malware/EICAR" > tests/av.virus || true
+	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/opt/f-secure/fsav/bin/fsav --virus-action1=none /malware/EICAR" > tests/av.virus || true
 	@echo "===> ${NAME} Clean Test"
-	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/etc/init.d/zavd start --no-daemon > /dev/null 2>&1 && zavcli /bin/cat" > tests/av.clean || true
+	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/opt/f-secure/fsav/bin/fsav --virus-action1=none /bin/cat" > tests/av.clean || true
 	@echo "===> ${NAME} Version"
-	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/etc/init.d/zavd start --no-daemon > /dev/null 2>&1 && zavcli --version" > tests/av.version || true
-	@echo "===> ${NAME} DB version"
-	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/etc/init.d/zavd start --no-daemon > /dev/null 2>&1 && zavcli --version-zavd" > tests/av.update || true
+	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/opt/f-secure/fsav/bin/fsav --version" > tests/av.version || true
 
 test:
 	docker rm -f elasticsearch || true

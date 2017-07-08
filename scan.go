@@ -38,12 +38,12 @@ var path string
 
 type pluginResults struct {
 	ID   string      `json:"id" structs:"id,omitempty"`
-	Data ResultsData `json:"f-secure" structs:"f-secure"`
+	Data ResultsData `json:"fsecure" structs:"f-secure"`
 }
 
 // FSecure json object
 type FSecure struct {
-	Results ResultsData `json:"f-secure"`
+	Results ResultsData `json:"fsecure"`
 }
 
 // ResultsData json object
@@ -75,30 +75,49 @@ func assert(err error) {
 
 // AvScan performs antivirus scan
 func AvScan(timeout int) FSecure {
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
-	var results ResultsData
-
-	results, err := ParseFSecureOutput(utils.RunCommand(
+	results, err := utils.RunCommand(
 		ctx,
 		"/opt/f-secure/fsav/bin/fsav",
 		"--virus-action1=none",
 		path,
-	))
-	if err != nil {
+	)
+	log.WithFields(log.Fields{
+		"plugin":   name,
+		"category": category,
+		"path":     path,
+	}).Debug("FSecure output 1st try: ", results)
+
+	if err != nil && err.Error() != "exit status 3" {
 		// If fails try a second time
-		results, err = ParseFSecureOutput(utils.RunCommand(ctx, "/opt/f-secure/fsav/bin/fsav", "--virus-action1=none", path))
-		assert(err)
+		results, err = utils.RunCommand(
+			ctx,
+			"/opt/f-secure/fsav/bin/fsav",
+			"--virus-action1=none",
+			path,
+		)
+		log.WithFields(log.Fields{
+			"plugin":   name,
+			"category": category,
+			"path":     path,
+		}).Debug("FSecure output 2nd try: ", results)
 	}
 
-	return FSecure{
-		Results: results,
+	if err != nil {
+		// FSecure exits with error status 3 if it finds a virus
+		if err.Error() == "exit status 3" {
+			err = nil
+		}
 	}
+
+	return FSecure{Results: ParseFSecureOutput(results, err)}
 }
 
 // ParseFSecureOutput convert fsecure output into ResultsData struct
-func ParseFSecureOutput(fsecureout string, err error) (ResultsData, error) {
+func ParseFSecureOutput(fsecureout string, err error) ResultsData {
 
 	// root@70bc84b1553c:/malware# fsav --virus-action1=none eicar.com.txt
 	// EVALUATION VERSION - FULLY FUNCTIONAL - FREE TO USE FOR 30 DAYS.
@@ -119,7 +138,7 @@ func ParseFSecureOutput(fsecureout string, err error) (ResultsData, error) {
 	log.Debugln(fsecureout)
 
 	if err != nil {
-		return ResultsData{}, err
+		return ResultsData{Error: err.Error()}
 	}
 
 	version, database := getFSecureVersion()
@@ -147,7 +166,7 @@ func ParseFSecureOutput(fsecureout string, err error) (ResultsData, error) {
 		}
 	}
 
-	return fsecure, nil
+	return fsecure
 }
 
 // getFSecureVersion get Anti-Virus scanner version
@@ -289,6 +308,7 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tmpfile.Name()) // clean up
 
 	data, err := ioutil.ReadAll(file)
+	assert(err)
 
 	if _, err = tmpfile.Write(data); err != nil {
 		log.Fatal(err)
