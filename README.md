@@ -1,9 +1,9 @@
 malice-fsecure
-===============
+==============
 
-[![Circle CI](https://circleci.com/gh/maliceio/malice-fsecure.png?style=shield)](https://circleci.com/gh/maliceio/malice-fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker image-2.66 GB-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
+[![Circle CI](https://circleci.com/gh/malice-plugins/fsecure.png?style=shield)](https://circleci.com/gh/malice-plugins/fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker image-2.66-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
 
-This repository contains a **Dockerfile** of [f-secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) for [Docker](https://www.docker.io/)'s [trusted build](https://hub.docker.com/r/malice/fsecure/) published to the public [DockerHub](https://index.docker.io/).
+Malice [F-Secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) AntiVirus Plugin
 
 ### Dependencies
 
@@ -54,7 +54,10 @@ Run 'fsecure COMMAND --help' for more information on a command.
 
 This will output to stdout and POST to malice results API webhook endpoint.
 
-### Sample Output JSON:
+Sample Output
+-------------
+
+### JSON:
 
 ```json
 {
@@ -71,13 +74,14 @@ This will output to stdout and POST to malice results API webhook endpoint.
 }
 ```
 
-### Sample Output STDOUT (Markdown Table):
+### Markdown Table:
 
 ---
 
 #### F-Secure
+
 | Infected | Result                        | Engine         | Updated  |
-| -------- | ----------------------------- | -------------- | -------- |
+|----------|-------------------------------|----------------|----------|
 | true     | EICAR-Test-File (not a virus) | 11.00 build 79 | 20170122 |
 
 ---
@@ -85,24 +89,24 @@ This will output to stdout and POST to malice results API webhook endpoint.
 Documentation
 -------------
 
--	[To write results to ElasticSearch](https://github.com/maliceio/malice-fsecure/blob/master/docs/elasticsearch.md)
--	[To create a fsecure scan micro-service](https://github.com/maliceio/malice-fsecure/blob/master/docs/web.md)
--	[To post results to a webhook](https://github.com/maliceio/malice-fsecure/blob/master/docs/callback.md)
--	[To update the AV definitions](https://github.com/maliceio/malice-fsecure/blob/master/docs/update.md)
+-	[To write results to ElasticSearch](https://github.com/malice-plugins/fsecure/blob/master/docs/elasticsearch.md)
+-	[To create a fsecure scan micro-service](https://github.com/malice-plugins/fsecure/blob/master/docs/web.md)
+-	[To post results to a webhook](https://github.com/malice-plugins/fsecure/blob/master/docs/callback.md)
+-	[To update the AV definitions](https://github.com/malice-plugins/fsecure/blob/master/docs/update.md)
 
 ### Issues
 
-Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fsecure/issues/new).
+Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/malice-plugins/fsecure/issues/new).
 
 ### CHANGELOG
 
-See [`CHANGELOG.md`](https://github.com/maliceio/malice-fsecure/blob/master/sophos/CHANGELOG.md)
+See [`CHANGELOG.md`](https://github.com/malice-plugins/fsecure/blob/master/sophos/CHANGELOG.md)
 
 ### Contributing
 
-[See all contributors on GitHub](https://github.com/maliceio/malice-fsecure/graphs/contributors).
+[See all contributors on GitHub](https://github.com/malice-plugins/fsecure/graphs/contributors).
 
-Please update the [CHANGELOG.md](https://github.com/maliceio/malice-fsecure/blob/master/sophos/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
+Please update the [CHANGELOG.md](https://github.com/malice-plugins/fsecure/blob/master/sophos/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
 
 ### License
 

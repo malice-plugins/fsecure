@@ -2,6 +2,11 @@ FROM debian:jessie
 
 LABEL maintainer "https://github.com/blacktop"
 
+LABEL malice.plugin.repository = "https://github.com/malice-plugins/fsecure.git"
+LABEL malice.plugin.category="av"
+LABEL malice.plugin.mime="*"
+LABEL malice.plugin.docker.engine="*"
+
 ENV FSECURE_VERSION 11.10.68
 
 # Install Requirements
@@ -31,10 +36,10 @@ RUN echo "===> Update F-Secure Database..." \
   && /etc/init.d/fsupdate start \
   && /opt/f-secure/fsav/bin/dbupdate /opt/f-secure/fsdbupdate9.run; exit 0
 
-ENV GO_VERSION 1.7.5
+ENV GO_VERSION 1.8.3
 
 # Install Go binary
-COPY . /go/src/github.com/maliceio/malice-fsecure
+COPY . /go/src/github.com/malice-plugins/fsecure
 RUN buildDeps='ca-certificates \
                build-essential \
                mercurial \
@@ -49,7 +54,7 @@ RUN buildDeps='ca-certificates \
   && tar -C /usr/local -xzf /tmp/go.tar.gz \
   && export PATH=$PATH:/usr/local/go/bin \
   && echo "===> Building avscan Go binary..." \
-  && cd /go/src/github.com/maliceio/malice-fsecure \
+  && cd /go/src/github.com/malice-plugins/fsecure \
   && export GOPATH=/go \
   && go version \
   && go get \

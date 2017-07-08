@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,7 +19,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/maliceio/go-plugin-utils/database/elasticsearch"
 	"github.com/maliceio/go-plugin-utils/utils"
-	"github.com/maliceio/malice/utils/clitable"
 	"github.com/parnurzeal/gorequest"
 	"github.com/urfave/cli"
 )
@@ -52,6 +53,8 @@ type ResultsData struct {
 	Engine   string      `json:"engine" structs:"engine"`
 	Database string      `json:"database" structs:"database"`
 	Updated  string      `json:"updated" structs:"updated"`
+	MarkDown string      `json:"markdown,omitempty" structs:"markdown,omitempty"`
+	Error    string      `json:"error,omitempty" structs:"error,omitempty"`
 }
 
 // ScanEngines scan engine results
@@ -242,18 +245,17 @@ func updateAV(ctx context.Context) error {
 	return err
 }
 
-func printMarkDownTable(fsecure FSecure) {
+func generateMarkDownTable(f FSecure) string {
+	var tplOut bytes.Buffer
 
-	fmt.Println("#### F-Secure")
-	table := clitable.New([]string{"Infected", "Result", "Engine", "Updated"})
-	table.AddRow(map[string]interface{}{
-		"Infected": fsecure.Results.Infected,
-		"Result":   fsecure.Results.Engines.Aquarius,
-		"Engine":   fsecure.Results.Engine,
-		"Updated":  fsecure.Results.Updated,
-	})
-	table.Markdown = true
-	table.Print()
+	t := template.Must(template.New("").Parse(tpl))
+
+	err := t.Execute(&tplOut, f)
+	if err != nil {
+		log.Println("executing template:", err)
+	}
+
+	return tplOut.String()
 }
 
 func printStatus(resp gorequest.Response, body string, errs []error) {
@@ -388,6 +390,7 @@ func main() {
 			}
 
 			fsecure := AvScan(c.Int("timeout"))
+			fsecure.Results.MarkDown = generateMarkDownTable(fsecure)
 
 			// upsert into Database
 			elasticsearch.InitElasticSearch(elastic)
@@ -399,8 +402,9 @@ func main() {
 			})
 
 			if c.Bool("table") {
-				printMarkDownTable(fsecure)
+				fmt.Println(fsecure.Results.MarkDown)
 			} else {
+				fsecure.Results.MarkDown = ""
 				fsecureJSON, err := json.Marshal(fsecure)
 				assert(err)
 				if c.Bool("post") {
@@ -418,7 +422,7 @@ func main() {
 				fmt.Println(string(fsecureJSON))
 			}
 		} else {
-			log.Fatal(fmt.Errorf("Please supply a file to scan with malice/fsecure"))
+			log.Fatal(fmt.Errorf("please supply a file to scan with malice/fsecure"))
 		}
 		return nil
 	}
