@@ -1,7 +1,7 @@
 malice-fsecure
 ==============
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/fsecure.png?style=shield)](https://circleci.com/gh/malice-plugins/fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker%20image-2.66-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
+[![Circle CI](https://circleci.com/gh/malice-plugins/fsecure.png?style=shield)](https://circleci.com/gh/malice-plugins/fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker%20image-2.34GB-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
 
 Malice [F-Secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) AntiVirus Plugin
 

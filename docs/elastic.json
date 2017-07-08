@@ -1,0 +1,39 @@
+{
+  "took": 50,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "failed": 0
+  },
+  "hits": {
+    "total": 1,
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "malice",
+        "_type": "samples",
+        "_id": "AV0i2Z7pcem99se8hHj4",
+        "_score": 1,
+        "_source": {
+          "plugins": {
+            "av": {
+              "fsecure": {
+                "database": "2017-07-08_08",
+                "engine": "11.10 build 68",
+                "infected": true,
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | EICAR-Test-File (not a virus) | 11.10 build 68 | 20170708 |\n",
+                "results": {
+                  "aquarius": "EICAR-Test-File (not a virus)",
+                  "fse": "EICAR_Test_File"
+                },
+                "updated": "20170708"
+              }
+            }
+          },
+          "scan_date": "2017-07-08T15:37:53.632338402Z"
+        }
+      }
+    ]
+  }
+}

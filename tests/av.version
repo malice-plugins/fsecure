@@ -1,3 +1,25 @@
-zavcli (Zoner AntiVirus client) 1.3.0
+EVALUATION VERSION - FULLY FUNCTIONAL - FREE TO USE FOR 30 DAYS.
+To purchase license, please check http://www.F-Secure.com
 
-Copyright (C) 2009 Zoner Software a.s.
+F-Secure Linux Security version 11.10 build 68
+
+F-Secure Anti-Virus CLI Command line client version:
+	F-Secure Anti-Virus CLI version 1.0  build 0069
+
+F-Secure Anti-Virus CLI Daemon version:
+	F-Secure Anti-Virus Daemon version 1.0  build 0161
+
+Database version: 2017-07-08_08
+
+Scanner Engine versions:
+	F-Secure Corporation Hydra engine version 5.17 build 23
+	F-Secure Corporation Hydra database version 2017-07-07_02
+
+	F-Secure Corporation Aquarius engine version 1.0 build 8
+	F-Secure Corporation Aquarius database version 2017-07-08_08
+
+Portions:
+Copyright (c) 1994-2010 Lua.org, PUC-Rio.
+Copyright (c) Reuben Thomas 2000-2010.
+
+For full license information on Hydra engine please see licenses-fselinux.txt in the databases folder
