@@ -38,6 +38,9 @@ avtest:
 	@echo "===> ${NAME} Version"
 	@docker run --init --rm --entrypoint=sh $(ORG)/$(NAME):$(VERSION) -c "/opt/f-secure/fsav/bin/fsavd && /opt/f-secure/fsav/bin/fsav --version" > tests/av.version || true
 
+update:
+	@docker run  --rm $(ORG)/$(NAME):$(VERSION) update
+
 test:
 	docker rm -f elasticsearch || true
 	docker run --init -d --name elasticsearch -p 9200:9200 blacktop/elasticsearch

@@ -32,6 +32,7 @@ RUN buildDeps='ca-certificates wget rpm' \
 
 # Update F-Secure
 RUN echo "===> Update F-Secure Database..." \
+  && mkdir -p /opt/malice \
   && /etc/init.d/fsaua start \
   && /etc/init.d/fsupdate start \
   && /opt/f-secure/fsav/bin/dbupdate /opt/f-secure/fsdbupdate9.run; exit 0

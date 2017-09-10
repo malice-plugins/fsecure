@@ -1,4 +1,4 @@
-# Create a F-Secure scan micro-service :new: :construction:
+# Create a F-Secure scan micro-service
 
 ```bash
 $ docker run -d -p 3993:3993 malice/fsecure web
