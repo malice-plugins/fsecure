@@ -32,7 +32,6 @@ RUN buildDeps='ca-certificates wget rpm' \
 
 # Update F-Secure
 RUN echo "===> Update F-Secure Database..." \
-  && mkdir -p /opt/malice \
   && /etc/init.d/fsaua start \
   && /etc/init.d/fsupdate start \
   && /opt/f-secure/fsav/bin/dbupdate /opt/f-secure/fsdbupdate9.run; exit 0
@@ -67,6 +66,8 @@ RUN buildDeps='ca-certificates \
 
 # Add EICAR Test Virus File to malware folder
 ADD http://www.eicar.org/download/eicar.com.txt /malware/EICAR
+RUN mkdir -p /opt/malice
+COPY update.sh /opt/malice/update
 
 WORKDIR /malware
 

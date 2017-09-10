@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -247,28 +248,25 @@ func getUpdatedDate() string {
 }
 
 func updateAV(ctx context.Context) error {
-	fmt.Println("Start FSecure Update Services...")
-	fsaua, err := utils.RunCommand(nil, "/etc/init.d/fsaua", "start")
-	log.WithFields(log.Fields{
-		"plugin":   name,
-		"category": category,
-		"path":     path,
-	}).Debug("FSecure fsaua: ", fsaua)
-	assert(err)
-	fsupdate, err := utils.RunCommand(nil, "/etc/init.d/fsupdate", "start")
-	log.WithFields(log.Fields{
-		"plugin":   name,
-		"category": category,
-		"path":     path,
-	}).Debug("FSecure fsupdate: ", fsupdate)
-	assert(err)
-
 	fmt.Println("Updating FSecure DBs...")
-	fmt.Println(utils.RunCommand(
-		ctx,
-		"/opt/f-secure/fsav/bin/dbupdate",
-		"/opt/f-secure/fsdbupdate9.run",
-	))
+	cmd := exec.Command("/opt/malice/update")
+	cmdReader, err := cmd.StdoutPipe()
+	scanner := bufio.NewScanner(cmdReader)
+	go func() {
+		for scanner.Scan() {
+			fmt.Printf("update | %s\n", scanner.Text())
+		}
+	}()
+	err = cmd.Start()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error starting update", err)
+		os.Exit(1)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error waiting for update", err)
+		os.Exit(1)
+	}
 
 	// Update UPDATED file
 	t := time.Now().Format("20060102")
