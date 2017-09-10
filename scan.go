@@ -247,11 +247,12 @@ func getUpdatedDate() string {
 }
 
 func updateAV(ctx context.Context) error {
-	fmt.Println("Updating FSecure...")
+	fmt.Println("Start FSecure Update Services...")
 	// FSecure needs to have the daemon started first
 	exec.Command("/etc/init.d/fsaua", "start").Output()
 	exec.Command("/etc/init.d/fsupdate", "start").Output()
 
+	fmt.Println("Updating FSecure DBs...")
 	fmt.Println(utils.RunCommand(
 		ctx,
 		"/opt/f-secure/fsav/bin/dbupdate",
@@ -381,7 +382,10 @@ func main() {
 			Aliases: []string{"u"},
 			Usage:   "Update virus definitions",
 			Action: func(c *cli.Context) error {
-				return updateAV(nil)
+				// 10 minute timeout
+				ctx, cancel := context.WithTimeout(context.Background(), time.Duration(600)*time.Second)
+				defer cancel()
+				return updateAV(ctx)
 			},
 		},
 		{
