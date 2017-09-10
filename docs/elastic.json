@@ -1,5 +1,5 @@
 {
-  "took": 50,
+  "took": 45,
   "timed_out": false,
   "_shards": {
     "total": 1,
@@ -13,25 +13,25 @@
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "AV0i2Z7pcem99se8hHj4",
+        "_id": "AV5tURsj6CDjkCYiAsWZ",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "fsecure": {
-                "database": "2017-07-08_08",
+                "database": "2017-09-10_08",
                 "engine": "11.10 build 68",
                 "infected": true,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | EICAR-Test-File (not a virus) | 11.10 build 68 | 20170708 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | EICAR-Test-File (not a virus) | 11.10 build 68 | 20170910 |\n",
                 "results": {
                   "aquarius": "EICAR-Test-File (not a virus)",
                   "fse": "EICAR_Test_File"
                 },
-                "updated": "20170708"
+                "updated": "20170910"
               }
             }
           },
-          "scan_date": "2017-07-08T15:37:53.632338402Z"
+          "scan_date": "2017-09-10T19:43:05.498491505Z"
         }
       }
     ]

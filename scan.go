@@ -248,9 +248,20 @@ func getUpdatedDate() string {
 
 func updateAV(ctx context.Context) error {
 	fmt.Println("Start FSecure Update Services...")
-	// FSecure needs to have the daemon started first
-	exec.Command("/etc/init.d/fsaua", "start").Output()
-	exec.Command("/etc/init.d/fsupdate", "start").Output()
+	fsaua, err := utils.RunCommand(nil, "/etc/init.d/fsaua", "start")
+	log.WithFields(log.Fields{
+		"plugin":   name,
+		"category": category,
+		"path":     path,
+	}).Debug("FSecure fsaua: ", fsaua)
+	assert(err)
+	fsupdate, err := utils.RunCommand(nil, "/etc/init.d/fsupdate", "start")
+	log.WithFields(log.Fields{
+		"plugin":   name,
+		"category": category,
+		"path":     path,
+	}).Debug("FSecure fsupdate: ", fsupdate)
+	assert(err)
 
 	fmt.Println("Updating FSecure DBs...")
 	fmt.Println(utils.RunCommand(
@@ -261,7 +272,7 @@ func updateAV(ctx context.Context) error {
 
 	// Update UPDATED file
 	t := time.Now().Format("20060102")
-	err := ioutil.WriteFile("/opt/malice/UPDATED", []byte(t), 0644)
+	err = ioutil.WriteFile("/opt/malice/UPDATED", []byte(t), 0644)
 	return err
 }
 
