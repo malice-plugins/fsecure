@@ -54,6 +54,7 @@ jobs:
             docker run --rm --volumes-from malvol app -t sample
       - run:
           name: Run update test
+          timeout: 1200
           command: |
             set -x
             docker run --rm app -V update
