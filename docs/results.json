@@ -2,11 +2,11 @@
   "fsecure": {
     "infected": true,
     "results": {
-      "fse": "EICAR_Test_File",
-      "aquarius": "EICAR-Test-File (not a virus)"
+      "fse": "",
+      "aquarius": "Backdoor.Lecna.AB"
     },
     "engine": "11.10 build 68",
-    "database": "2017-09-10_08",
-    "updated": "20170910"
+    "database": "2018-07-29_02",
+    "updated": "20180729"
   }
 }

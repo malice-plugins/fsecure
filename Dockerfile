@@ -36,21 +36,21 @@ RUN echo "===> Update F-Secure Database..." \
   && /etc/init.d/fsupdate start \
   && /opt/f-secure/fsav/bin/dbupdate /opt/f-secure/fsdbupdate9.run; exit 0
 
-ENV GO_VERSION 1.8.3
+ENV GO_VERSION 1.10.3
 
 # Install Go binary
 COPY . /go/src/github.com/malice-plugins/fsecure
 RUN buildDeps='ca-certificates \
-               build-essential \
-               mercurial \
-               git-core \
-               wget' \
+  build-essential \
+  mercurial \
+  git-core \
+  wget' \
   && apt-get update -qq \
   && apt-get install -yq $buildDeps --no-install-recommends \
   && echo "===> Install Go..." \
   && ARCH="$(dpkg --print-architecture)" \
   && wget -q https://storage.googleapis.com/golang/go$GO_VERSION.linux-$ARCH.tar.gz \
-    -O /tmp/go.tar.gz \
+  -O /tmp/go.tar.gz \
   && tar -C /usr/local -xzf /tmp/go.tar.gz \
   && export PATH=$PATH:/usr/local/go/bin \
   && echo "===> Building avscan Go binary..." \
@@ -58,7 +58,7 @@ RUN buildDeps='ca-certificates \
   && export GOPATH=/go \
   && go version \
   && go get \
-  && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/avscan \
+  && go build -ldflags "-s -w -X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/avscan \
   && echo "===> Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
