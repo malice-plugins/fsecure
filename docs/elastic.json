@@ -1,5 +1,5 @@
 {
-  "took": 39,
+  "took": 50,
   "timed_out": false,
   "_shards": {
     "total": 1,
@@ -8,31 +8,55 @@
     "failed": 0
   },
   "hits": {
-    "total": 1,
+    "total": 2,
     "max_score": 1,
     "hits": [
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "HDQ_5GQBWbU2iDqUDpMX",
+        "_id": "KmsqnWUBInV37mN9ViOU",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "fsecure": {
-                "database": "2018-07-29_02",
+                "database": "2018-09-03_01",
                 "engine": "11.10 build 68",
                 "infected": true,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Backdoor.Lecna.AB | 11.10 build 68 | 20180729 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Backdoor.Lecna.AB | 11.10 build 68 | 20180903 |\n",
                 "results": {
                   "aquarius": "Backdoor.Lecna.AB",
                   "fse": ""
                 },
-                "updated": "20180729"
+                "updated": "20180903"
               }
             }
           },
-          "scan_date": "2018-07-29T04:14:54.992952051Z"
+          "scan_date": "2018-09-03T02:02:02.247980367Z"
+        }
+      },
+      {
+        "_index": "malice",
+        "_type": "samples",
+        "_id": "K2sqnWUBInV37mN9giMX",
+        "_score": 1,
+        "_source": {
+          "plugins": {
+            "av": {
+              "fsecure": {
+                "database": "2018-09-03_01",
+                "engine": "11.10 build 68",
+                "infected": false,
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 11.10 build 68 | 20180903 |\n",
+                "results": {
+                  "aquarius": "",
+                  "fse": ""
+                },
+                "updated": "20180903"
+              }
+            }
+          },
+          "scan_date": "2018-09-03T02:02:13.393452783Z"
         }
       }
     ]

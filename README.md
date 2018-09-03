@@ -1,54 +1,56 @@
-# fsecure
+# malice-fsecure
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/fsecure.png?style=shield)](https://circleci.com/gh/malice-plugins/fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker%20image-3.49GB-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
+[![Circle CI](https://circleci.com/gh/malice-plugins/fsecure.png?style=shield)](https://circleci.com/gh/malice-plugins/fsecure) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fsecure.svg)](https://hub.docker.com/r/malice/fsecure/) [![Docker Image](https://img.shields.io/badge/docker%20image-2.94GB-blue.svg)](https://hub.docker.com/r/malice/fsecure/)
 
-Malice [F-Secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) AntiVirus Plugin
+> Malice [F-Secure](https://www.f-secure.com/en/web/business_global/downloads/linux-security/latest) AntiVirus Plugin
+
+---
 
 ### Dependencies
 
 - [debian:jessie (_125 MB_\)](https://index.docker.io/_/debian/)
 
-### Installation
+## Installation
 
-1.  Install [Docker](https://www.docker.io/).
-2.  Download [trusted build](https://hub.docker.com/r/malice/fsecure/) from public [DockerHub](https://hub.docker.com): `docker pull malice/fsecure`
+1. Install [Docker](https://www.docker.io/).
+2. Download [trusted build](https://hub.docker.com/r/malice/fsecure/) from public [DockerHub](https://hub.docker.com): `docker pull malice/fsecure`
 
-### Usage
+## Usage
 
 ```
 docker run --rm malice/fsecure EICAR
 ```
 
-#### Or link your own malware folder:
+### Or link your own malware folder:
 
 ```bash
 $ docker run --rm -v /path/to/malware:/malware:ro malice/fsecure FILE
 
-Usage: fsecure [OPTIONS] COMMAND [arg...]
+Usage: f-secure [OPTIONS] COMMAND [arg...]
 
 Malice F-Secure AntiVirus Plugin
 
-Version: v0.1.0, BuildTime: 20170122
+Version: v0.1.0, BuildTime: 20180903
 
 Author:
   blacktop - <https://github.com/blacktop>
 
 Options:
-  --verbose, -V         verbose output
-  --table, -t	       output as Markdown table
-  --callback, -c	    POST results to Malice webhook [$MALICE_ENDPOINT]
-  --proxy, -x	       proxy settings for Malice webhook endpoint [$MALICE_PROXY]
-  --timeout value       malice plugin timeout (in seconds) (default: 60) [$MALICE_TIMEOUT]
-  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]
-  --help, -h	        show help
-  --version, -v	     print the version
+  --verbose, -V          verbose output
+  --elasticsearch value  elasticsearch url for Malice to store results [$MALICE_ELASTICSEARCH_URL]
+  --table, -t            output as Markdown table
+  --callback, -c         POST results to Malice webhook [$MALICE_ENDPOINT]
+  --proxy, -x            proxy settings for Malice webhook endpoint [$MALICE_PROXY]
+  --timeout value        malice plugin timeout (in seconds) (default: 60) [$MALICE_TIMEOUT]
+  --help, -h             show help
+  --version, -v          print the version
 
 Commands:
-  update	Update virus definitions
-  web       Create a F-Secure scan web service
-  help		Shows a list of commands or help for one command
+  update  Update virus definitions
+  web     Create a F-Secure scan web service
+  help    Shows a list of commands or help for one command
 
-Run 'fsecure COMMAND --help' for more information on a command.
+Run 'f-secure COMMAND --help' for more information on a command.
 ```
 
 This will output to stdout and POST to malice results API webhook endpoint.
