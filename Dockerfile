@@ -10,9 +10,9 @@ LABEL malice.plugin.docker.engine="*"
 ENV FSECURE_VERSION 11.10.68
 
 # Install Requirements
-RUN buildDeps='ca-certificates wget rpm' \
+RUN buildDeps='wget rpm' \
   && apt-get update -qq \
-  && apt-get install -yq $buildDeps lib32stdc++6 psmisc \
+  && apt-get install -yq $buildDeps lib32stdc++6 psmisc ca-certificates \
   && echo "===> Install F-Secure..." \
   && cd /tmp \
   && wget -q https://download.f-secure.com/corpro/ls/trial/fsls-${FSECURE_VERSION}-rtm.tar.gz \
