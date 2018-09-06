@@ -1,5 +1,5 @@
 {
-  "took": 50,
+  "took": 35,
   "timed_out": false,
   "_shards": {
     "total": 1,
@@ -14,49 +14,49 @@
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "KmsqnWUBInV37mN9ViOU",
+        "_id": "xvZKrGUB0lIkQcGSN2Wk",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "fsecure": {
-                "database": "2018-09-03_01",
+                "database": "2018-09-05_14",
                 "engine": "11.10 build 68",
                 "infected": true,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Backdoor.Lecna.AB | 11.10 build 68 | 20180903 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Backdoor.Lecna.AB | 11.10 build 68 | 20180906 |\n",
                 "results": {
                   "aquarius": "Backdoor.Lecna.AB",
                   "fse": ""
                 },
-                "updated": "20180903"
+                "updated": "20180906"
               }
             }
           },
-          "scan_date": "2018-09-03T02:02:02.247980367Z"
+          "scan_date": "2018-09-06T00:31:09.708420677Z"
         }
       },
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "K2sqnWUBInV37mN9giMX",
+        "_id": "x_ZKrGUB0lIkQcGSXGX-",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "fsecure": {
-                "database": "2018-09-03_01",
+                "database": "2018-09-05_14",
                 "engine": "11.10 build 68",
                 "infected": false,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 11.10 build 68 | 20180903 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 11.10 build 68 | 20180906 |\n",
                 "results": {
                   "aquarius": "",
                   "fse": ""
                 },
-                "updated": "20180903"
+                "updated": "20180906"
               }
             }
           },
-          "scan_date": "2018-09-03T02:02:13.393452783Z"
+          "scan_date": "2018-09-06T00:31:19.293308894Z"
         }
       }
     ]
