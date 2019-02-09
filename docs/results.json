@@ -3,10 +3,10 @@
     "infected": true,
     "results": {
       "fse": "",
-      "aquarius": "Backdoor.Lecna.AB"
+      "aquarius": "Worm.WORM/Rbot.Gen"
     },
     "engine": "11.10 build 68",
-    "database": "2018-09-05_14",
-    "updated": "20180906"
+    "database": "2019-02-09_04",
+    "updated": "20190209"
   }
 }
