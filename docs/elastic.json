@@ -1,5 +1,5 @@
 {
-  "took": 132,
+  "took": 46,
   "timed_out": false,
   "_shards": {
     "total": 1,
@@ -14,7 +14,7 @@
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "8XCw1GgBuWYxDcV9E-6s",
+        "_id": "f-w31WgBUJoNM2QzrIOw",
         "_score": 1,
         "_source": {
           "plugins": {
@@ -23,22 +23,23 @@
                 "database": "2019-02-09_04",
                 "engine": "11.10 build 68",
                 "infected": true,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Worm.WORM/Rbot.Gen | 11.10 build 68 | 20190209 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | Worm.WORM/Rbot.Gen | 11.10 build 68 | 20190210 |\n",
+                "result": "Worm.WORM/Rbot.Gen",
                 "results": {
                   "aquarius": "Worm.WORM/Rbot.Gen",
                   "fse": ""
                 },
-                "updated": "20190209"
+                "updated": "20190210"
               }
             }
           },
-          "scan_date": "2019-02-09T23:55:35.7011122Z"
+          "scan_date": "2019-02-10T02:23:42.239661375Z"
         }
       },
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "8nCw1GgBuWYxDcV9T-6-",
+        "_id": "gOw31WgBUJoNM2Qz7YPn",
         "_score": 1,
         "_source": {
           "plugins": {
@@ -47,16 +48,17 @@
                 "database": "2019-02-09_04",
                 "engine": "11.10 build 68",
                 "infected": false,
-                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 11.10 build 68 | 20190209 |\n",
+                "markdown": "#### F-Secure\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 11.10 build 68 | 20190210 |\n",
+                "result": "",
                 "results": {
                   "aquarius": "",
                   "fse": ""
                 },
-                "updated": "20190209"
+                "updated": "20190210"
               }
             }
           },
-          "scan_date": "2019-02-09T23:55:51.1003506Z"
+          "scan_date": "2019-02-10T02:23:58.948771264Z"
         }
       }
     ]

@@ -56,6 +56,7 @@ type FSecure struct {
 // ResultsData json object
 type ResultsData struct {
 	Infected bool        `json:"infected" structs:"infected"`
+	Result   string      `json:"result" structs:"result"`
 	Engines  ScanEngines `json:"results" structs:"results"`
 	Engine   string      `json:"engine" structs:"engine"`
 	Database string      `json:"database" structs:"database"`
@@ -172,6 +173,7 @@ func ParseFSecureOutput(fsecureout string, err error) ResultsData {
 			fsecure.Engines.Aquarius = strings.TrimSpace(strings.TrimSuffix(parts[1], "[Aquarius]"))
 		}
 	}
+	fsecure.Result = strings.TrimSpace(fmt.Sprintf("%s %s", fsecure.Engines.Aquarius, fsecure.Engines.FSE))
 
 	return fsecure
 }
